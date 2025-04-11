@@ -99,6 +99,8 @@
 
 <body>
     <div class="wrapper">
+        <p class="message success">Active Rooms: {{ room_count }}</p>
+
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}
