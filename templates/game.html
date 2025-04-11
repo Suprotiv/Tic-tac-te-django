@@ -165,6 +165,11 @@
         const opponentTxtElm = document.getElementById("opponent-txt")
         const turnElm = document.getElementById("turn")
         const boxes = document.getElementsByClassName("box")
+
+        // Update WebSocket connection to use secure protocol if page is served over HTTPS
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/game/{{room.id}}/`);
+
         Array.from(boxes).forEach((elm, i) => {
             elm.addEventListener("click", e => {
                 if(myTurn && !elm.innerHTML && !elm.getAttribute("player")){
@@ -202,8 +207,6 @@
                 }
             })
         }
-
-        const ws = new WebSocket(`ws://${window.location.host}/ws/game/{{room.id}}/`)
 
 
         ws.onopen = e => {

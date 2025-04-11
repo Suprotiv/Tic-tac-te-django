@@ -26,6 +26,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']  # Be careful with this in production
 
+# Add CSRF trusted origins if using HTTPS
+CSRF_TRUSTED_ORIGINS = ['https://*', 'http://*']
+
 # Application definition
 
 INSTALLED_APPS = [

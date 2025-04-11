@@ -1,8 +1,6 @@
-from django.db import models
-
-# Create your models here.
-
 class Room(models.Model):
-    
-    def __str__(self) -> str:
-        return f"{self.id}"
+    code = models.CharField(max_length=8, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Room {self.code}"
