@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="{% static 'game/style.css' %}">
+</head>
+<body>
+    <div id="game-board">
+        {% for row in board %}
+            <div class="row">
+                {% for cell in row %}
+                    <div class="cell" data-cell="{{ forloop.counter0 }}"></div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        const roomName = '{{ room_name }}';
+        const gameSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/game/' + roomName + '/'
+        );
+
+        gameSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const move = data.move;
+            const player = data.player;
+            // Update game board based on received move
+            document.querySelector(`[data-cell="${move}"]`).textContent = player;
+        };
+
+        function makeMove(cell) {
+            const currentPlayer = // your current player logic
+            gameSocket.send(JSON.stringify({
+                'move': cell,
+                'player': currentPlayer
+            }));
+        }
+    </script>
+</body>
+</html>
