@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Choose Mode</title>
+    <style>
+        body {
+            background: linear-gradient(to right, #1f75ce, #744bc4);
+            font-family: 'Open Sans', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 16px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 12px 20px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .online-btn { background-color: #1f75ce; color: white; }
+        .ai-btn { background-color: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choose Game Mode</h1>
+        <form action="/online" method="get">
+            <button type="submit" class="online-btn">Play Online</button>
+        </form>
+        <form action="/play/ai/" method="post">
+            {% csrf_token %}
+            <input type="text" name="player-name" placeholder="Enter Your Name" required style="padding: 10px; margin-bottom: 10px; width: 100%; border-radius: 6px; border: 1px solid #ccc;">
+            <button type="submit" class="ai-btn">Play vs AI</button>
+        </form>
+    </div>
+</body>
+</html>

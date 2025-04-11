@@ -1,283 +1,301 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet" />
-    <title>Room {{room.id}} | Game</title>
-    <style>
-        * {
-            font-family: "Roboto", sans-serif;
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Room {{room.id}} | Game</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * {
+      font-family: "Roboto", sans-serif;
+      box-sizing: border-box;
+    }
 
-        body {
-            background: linear-gradient(166.66deg, rgb(31, 117, 206) 4.62%, rgb(23, 121, 207) 4.62%, rgb(116, 75, 196) 86.29%);
-            min-height: 100vh;
-        }
+    body {
+      background: linear-gradient(to right, #1f75ce, #744bc4);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        .details {
-            width: 100%;
-            max-width: 800px;
-            margin: 20px auto;
-        }
+    .main-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1000px;
+      width: 100%;
+      background: #ffffffcc;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
 
-        .status-box {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: 600;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin: 10px;
-            min-width: 200px;
-            text-align: center;
-        }
+    .left-panel, .right-panel {
+      flex: 1;
+      min-width: 280px;
+      padding: 20px;
+    }
 
-        #turn {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 20px auto;
-            max-width: 400px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 15px;
+    }
 
-        .wrapper {
-            width: 100vw;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            padding: 20px;
-        }
+    .status-box {
+      background: white;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      font-weight: 600;
+      font-size: 18px;
+      text-align: center;
+    }
 
-        .container {
-            margin: 20px 0px;
-            width: 400px;
-            height: 400px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
 
-        .child {
-            width: 33.33333%;
-            height: 33.33333%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 70px;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: background-color 0.3s ease;
-        }
+    #turn {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 22px;
+      text-align: center;
+      margin-top: 15px;
+    }
 
-        .child:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
+    #timer {
+      font-size: 18px;
+      color: #d63384;
+      font-weight: 600;
+      text-align: center;
+    }
 
-        .player-letter {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: scale(0);
-            transition: all 0.25s ease-in-out;
-            opacity: 0;
-            color: #2c3e50;
-        }
+    .grid {
+      width: 360px;
+      height: 360px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 5px;
+      margin: auto;
+    }
 
-        .player-letter.active {
-            transform: scale(1);
-            opacity: 1;
-        }
+    .box {
+      background: #f7f7f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      font-weight: bold;
+      border: 2px solid #333;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
 
-        .b-top { border-top: 3px solid #2c3e50; }
-        .b-bottom { border-bottom: 3px solid #2c3e50; }
-        .b-left { border-left: 3px solid #2c3e50; }
-        .b-right { border-right: 3px solid #2c3e50; }
+    .box:hover {
+      background-color: #eaeaea;
+    }
 
-        @media (max-width: 576px) {
-            .container {
-                width: 320px;
-                height: 320px;
-            }
-            .child {
-                font-size: 50px;
-            }
-        }
-    </style>
+    @media (max-width: 768px) {
+      .main-wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+      .right-panel {
+        margin-top: 20px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <div class="wrapper">
-        <div class="details d-flex flex-wrap justify-content-center align-items-center">
-            <div class="status-box">{{name}} (You)</div>
-            <div class="status-box">Room ID: {{room.id}}</div>
-            <div class="status-box" id="opponent-txt">Opponent (waiting to join)</div>
-        </div>
-        <div id="scoreboard" class="details d-flex justify-content-center gap-4">
-            <div class="status-box">You: <span id="scoreYou">0</span></div>
-            <div class="status-box">Opponent: <span id="scoreOpponent">0</span></div>
-        </div>
-
-        <div class="container">
-            <div boxIndex="0" player="" class="box child box-1 b-right b-bottom"></div>
-            <div boxIndex="1" player="" class="box child box-2 b-left b-right b-bottom"></div>
-            <div boxIndex="2" player="" class="box child box-3 b-left b-bottom"></div>
-            <div boxIndex="3" player="" class="box child box-4 b-top b-right b-bottom"></div>
-            <div boxIndex="4" player="" class="box child box-5 b-top b-bottom b-right b-left"></div>
-            <div boxIndex="5" player="" class="box child box-6 b-top b-bottom b-left"></div>
-            <div boxIndex="6" player="" class="box child box-7 b-right b-top"></div>
-            <div boxIndex="7" player="" class="box child box-8 b-top b-right b-left"></div>
-            <div boxIndex="8" player="" class="box child box-9 b-top b-left"></div>
-        </div>
-
-        <div id="turn" class="details"></div>
+  <div class="main-wrapper">
+    <div class="left-panel">
+      <div class="status-box">{{name}} (You)</div>
+      <div class="status-box">Room ID: {{room.id}}</div>
+      <div class="status-box" id="opponent-txt">Opponent (waiting to join)</div>
+      <div class="scoreboard">
+        <div class="status-box">You: <span id="scoreYou">0</span></div>
+        <div class="status-box">Opponent: <span id="scoreOpponent">0</span></div>
+      </div>
+      <div id="turn">Waiting...</div>
+      <div id="timer">Timer: 15s</div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div class="right-panel">
+      <div class="grid" id="grid">
+        <div class="box" boxIndex="0"></div>
+        <div class="box" boxIndex="1"></div>
+        <div class="box" boxIndex="2"></div>
+        <div class="box" boxIndex="3"></div>
+        <div class="box" boxIndex="4"></div>
+        <div class="box" boxIndex="5"></div>
+        <div class="box" boxIndex="6"></div>
+        <div class="box" boxIndex="7"></div>
+        <div class="box" boxIndex="8"></div>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        let board = {0:'', 1:'', 2:'', 3:'', 4:'', 5:'', 6:'', 7:'', 8:''}
-        let myTurn = false
-        let playerLetter = ""
-        const opponentTxtElm = document.getElementById("opponent-txt")
-        const turnElm = document.getElementById("turn")
-        const boxes = document.getElementsByClassName("box")
+  <script>
+    const boxes = document.querySelectorAll('.box');
+    const turnElm = document.getElementById("turn");
+    const opponentTxtElm = document.getElementById("opponent-txt");
+    const scoreYouElm = document.getElementById("scoreYou");
+    const scoreOpponentElm = document.getElementById("scoreOpponent");
+    const timerElm = document.getElementById("timer");
 
-        function updateScoreboard(scores) {
-    if (playerLetter === "X") {
-        document.getElementById("scoreYou").innerText = scores.X;
-        document.getElementById("scoreOpponent").innerText = scores.O;
-    } else {
-        document.getElementById("scoreYou").innerText = scores.O;
-        document.getElementById("scoreOpponent").innerText = scores.X;
+    let board = {0:'',1:'',2:'',3:'',4:'',5:'',6:'',7:'',8:''};
+    let myTurn = false;
+    let playerLetter = '';
+    let timerInterval = null;
+    let timeLeft = 15;
+
+    const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
+    const ws = new WebSocket(`${wsProtocol}://${window.location.host}/ws/game/{{room.id}}/`);
+
+    function updateScoreboard(scores) {
+      if (playerLetter === "X") {
+        scoreYouElm.textContent = scores.X;
+        scoreOpponentElm.textContent = scores.O;
+      } else {
+        scoreYouElm.textContent = scores.O;
+        scoreOpponentElm.textContent = scores.X;
+      }
     }
-}
 
+    function resetBoard() {
+      boxes.forEach(box => {
+        box.textContent = "";
+        box.removeAttribute("player");
+      });
+    }
 
-        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const ws = new WebSocket(`${wsProtocol}//${window.location.host}/ws/game/{{room.id}}/`);
-
-        Array.from(boxes).forEach((elm, i) => {
-            elm.addEventListener("click", () => {
-                if (myTurn && !elm.innerHTML && !elm.getAttribute("player")) {
-                    board[i] = playerLetter
-                    ws.send(JSON.stringify({event: 'boardData_send', board: board}))
-                    addPlayerLetter(elm)
-                    myTurn = false
-                }
-            })
-        })
-
-        function addPlayerLetter(element, player = playerLetter) {
-            element.innerHTML = `<p class="player-letter">${player}</p>`
-            element.setAttribute("player", player)
-            setTimeout(() => {
-                element.children[0].classList.add("active")
-            }, 1)
+    function updateBoard(boardData) {
+      boxes.forEach((box, i) => {
+        if (boardData[i] && !box.getAttribute("player")) {
+          box.textContent = boardData[i];
+          box.setAttribute("player", boardData[i]);
         }
+      });
+    }
 
-        function resetBoard() {
-            Array.from(boxes).forEach(elm => {
-                elm.innerHTML = ``
-                elm.setAttribute("player", "")
-            })
+    function startTimer() {
+      clearInterval(timerInterval);
+      timeLeft = 15;
+      timerElm.textContent = `Timer: ${timeLeft}s`;
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerElm.textContent = `Timer: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          ws.send(JSON.stringify({ event: "timeout" }));
         }
+      }, 1000);
+    }
 
-        function updateBoard(boardData) {
-            Array.from(boxes).forEach((elm, i) => {
-                if (boardData[i] !== "" && !elm.getAttribute("player")) {
-                    addPlayerLetter(elm, boardData[i])
-                }
-            })
-        }
+    function stopTimer() {
+      clearInterval(timerInterval);
+      timerElm.textContent = "Timer: -";
+    }
 
-        ws.onmessage = e => {
-            const data = JSON.parse(e.data)
-            if (data.event === "show_error") {
-                Swal.fire({ icon: 'error', title: data.error }).then(() => window.location = '/')
-            }
-            else if (data.event === "game_start") {
-                board = data.board
-                myTurn = data.myTurn
-                playerLetter = myTurn ? "X" : "O"
-                resetBoard()
-                turnElm.innerHTML = myTurn ? "Your Turn" : "Opponent's Turn"
-                opponentTxtElm.innerHTML = "Opponent Joined"
-                if (data.scores) updateScoreboard(data.scores)
-                setTimeout(() => Swal.close(), 500)
-            }
-            else if (data.event === "boardData_send") {
-                board = data.board
-                myTurn = data.myTurn
-                updateBoard(board)
-                turnElm.innerHTML = myTurn ? "Your Turn" : "Opponent's Turn"
-            }
-            else if (data.event === "won") {
-                board = data.board
-                myTurn = data.myTurn
-                updateBoard(board)
-                if (data.scores) updateScoreboard(data.scores)
-                turnElm.innerHTML = data.winner === playerLetter ? "You Won" : "You Lost"
-                setTimeout(() => {
-                    Swal.fire({
-                        icon: data.winner === playerLetter ? 'success' : "error",
-                        title: data.winner === playerLetter ? 'You Won' : "You Lost",
-                        confirmButtonText: "Restart"
-                    }).then(() => ws.send(JSON.stringify({ event: 'restart' })))
-                }, 400)
-            }
-            else if (data.event === "draw") {
-                board = data.board
-                myTurn = data.myTurn
-                updateBoard(board)
-                turnElm.innerHTML = "Draw"
-                setTimeout(() => {
-                    Swal.fire({
-                        icon: "info",
-                        title: "Draw",
-                        confirmButtonText: "Restart"
-                    }).then(() => ws.send(JSON.stringify({ event: 'restart' })))
-                }, 400)
-            }
-            else if (data.event === "opponent_left") {
-                board = data.board
-                myTurn = data.myTurn
-                resetBoard()
-                turnElm.innerHTML = "Opponent Left"
-                opponentTxtElm.innerHTML = "Opponent (waiting to join)"
-                updateScoreboard({ X: 0, O: 0 })
-                setTimeout(() => {
-                    Swal.fire({
-                        icon: "info",
-                        title: "Opponent Left",
-                        confirmButtonText: "Ok"
-                    })
-                }, 400)
-            }
+    boxes.forEach((box, index) => {
+      box.addEventListener('click', () => {
+        if (myTurn && !box.textContent) {
+          board[index] = playerLetter;
+          box.textContent = playerLetter;
+          box.setAttribute("player", playerLetter);
+          myTurn = false;
+          stopTimer();
+          ws.send(JSON.stringify({ event: "boardData_send", board }));
         }
-    </script>
+      });
+    });
+
+    ws.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+
+      switch (data.event) {
+        case "show_error":
+          Swal.fire({ icon: "error", title: data.error }).then(() => location.href = '/');
+          break;
+
+          case "game_start":
+                Swal.close(); // Close any lingering popup
+                board = data.board;
+                myTurn = data.myTurn;
+                playerLetter = myTurn ? "X" : "O";
+                turnElm.textContent = myTurn ? "Your Turn" : "Opponent's Turn";
+                resetBoard();
+                opponentTxtElm.textContent = "Opponent Joined";
+                updateScoreboard(data.scores);
+                if (myTurn) startTimer();
+                else stopTimer();
+                break;
+
+
+        case "boardData_send":
+          board = data.board;
+          myTurn = data.myTurn;
+          updateBoard(board);
+          turnElm.textContent = myTurn ? "Your Turn" : "Opponent's Turn";
+          if (myTurn) startTimer();
+          else stopTimer();
+          break;
+
+        case "won":
+          board = data.board;
+          updateBoard(board);
+          updateScoreboard(data.scores);
+          stopTimer();
+          turnElm.textContent = data.winner === playerLetter ? "You Won!" : "You Lost!";
+          setTimeout(() => {
+            Swal.fire({
+              icon: data.winner === playerLetter ? 'success' : 'error',
+              title: data.winner === playerLetter ? "You Won!" : "You Lost!",
+              confirmButtonText: "Play Again"
+            }).then(() => {
+              ws.send(JSON.stringify({ event: 'restart' }));
+            });
+          }, 300);
+          break;
+
+        case "draw":
+          updateBoard(data.board);
+          stopTimer();
+          turnElm.textContent = "It's a Draw!";
+          setTimeout(() => {
+            Swal.fire({
+              icon: "info",
+              title: "It's a Draw!",
+              confirmButtonText: "Play Again"
+            }).then(() => {
+              ws.send(JSON.stringify({ event: 'restart' }));
+            });
+          }, 300);
+          break;
+
+        case "opponent_left":
+          resetBoard();
+          stopTimer();
+          turnElm.textContent = "Opponent Left";
+          opponentTxtElm.textContent = "Opponent (waiting to join)";
+          updateScoreboard({ X: 0, O: 0 });
+          Swal.fire({ icon: "info", title: "Opponent Left", confirmButtonText: "OK" });
+          break;
+      }
+    };
+  </script>
 </body>
-
 </html>

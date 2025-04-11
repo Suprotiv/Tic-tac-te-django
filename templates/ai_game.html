@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe - Play vs AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 50px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #player-name {
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 2px solid #ccc;
+            transition: background 0.3s ease;
+        }
+
+        .cell:hover {
+            background: #e0e0e0;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tic Tac Toe vs AI</h1>
+    <div id="player-name">Player: {{ name }}</div>
+    <div class="board" id="board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+
+    <div class="message" id="message">Your turn!</div>
+    <button class="reset-btn" onclick="resetGame()">Restart</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const cells = document.querySelectorAll('.cell');
+        const message = document.getElementById('message');
+
+        let gameBoard = Array(9).fill(null);
+        let isGameOver = false;
+
+        const winPatterns = [
+            [0,1,2], [3,4,5], [6,7,8],  // rows
+            [0,3,6], [1,4,7], [2,5,8],  // columns
+            [0,4,8], [2,4,6]            // diagonals
+        ];
+
+        function checkWinner(board, player) {
+            return winPatterns.some(pattern =>
+                pattern.every(index => board[index] === player)
+            );
+        }
+
+        function isDraw(board) {
+            return board.every(cell => cell !== null);
+        }
+
+        function aiMove() {
+            if (isGameOver) return;
+            let emptyIndices = gameBoard
+                .map((val, idx) => val === null ? idx : null)
+                .filter(val => val !== null);
+
+            if (emptyIndices.length === 0) return;
+
+            // Random move
+            const move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+            gameBoard[move] = 'O';
+            cells[move].textContent = 'O';
+
+            if (checkWinner(gameBoard, 'O')) {
+                message.textContent = "AI wins!";
+                isGameOver = true;
+                return;
+            }
+
+            if (isDraw(gameBoard)) {
+                message.textContent = "It's a draw!";
+                isGameOver = true;
+                return;
+            }
+
+            message.textContent = "Your turn!";
+        }
+
+        function handleClick(e) {
+            const index = e.target.dataset.index;
+
+            if (isGameOver || gameBoard[index] !== null) return;
+
+            gameBoard[index] = 'X';
+            e.target.textContent = 'X';
+
+            if (checkWinner(gameBoard, 'X')) {
+                message.textContent = "You win!";
+                isGameOver = true;
+                return;
+            }
+
+            if (isDraw(gameBoard)) {
+                message.textContent = "It's a draw!";
+                isGameOver = true;
+                return;
+            }
+
+            message.textContent = "AI is thinking...";
+            setTimeout(aiMove, 500);  // slight delay to simulate thinking
+        }
+
+        function resetGame() {
+            gameBoard = Array(9).fill(null);
+            isGameOver = false;
+            cells.forEach(cell => cell.textContent = '');
+            message.textContent = "Your turn!";
+        }
+
+        cells.forEach(cell => cell.addEventListener('click', handleClick));
+    </script>
+</body>
+</html>

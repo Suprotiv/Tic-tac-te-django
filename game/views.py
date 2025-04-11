@@ -30,3 +30,12 @@ def game(request, id=None, name=None):
     except Room.DoesNotExist:
         messages.error(request, "Room does not exist !!")
         return redirect("/")
+    
+def home(request):
+    return render(request, "home.html")
+
+def ai_game(request):
+    if request.method == "POST":
+        player_name = request.POST.get("player-name", "You")
+        return render(request, "ai_game.html", {"name": player_name})
+    return redirect("/")
